@@ -1,0 +1,44 @@
+model:
+  name: 'resnet50'
+  pretrained: True
+
+data:
+  type: 'image'
+  sources: ['market1501']
+  targets: ['market1501']
+  height: 256
+  width: 128
+  combineall: False
+  transforms: ['random_flip']
+  save_dir: 'log/market/'
+
+sampler:
+  train_sampler: 'RandomIdentitySampler'
+
+loss:
+  name: 'triplet'
+  softmax:
+    label_smooth: True
+  triplet:
+    margin: 0.3 # distance margin
+    weight_t: 0.0001 # weight to balance hard triplet loss
+    weight_x: 1.0 # weight to balance cross entropy loss
+
+train:
+  optim: 'amsgrad'
+  lr: 0.0003
+  max_epoch: 150
+  batch_size: 32
+  fixbase_epoch: 5
+  open_layers: ['fc','classifier']
+  lr_scheduler: 'multi_step'
+  stepsize: [20,40]
+
+test:
+  batch_size: 100
+  dist_metric: 'euclidean'
+  normalize_feature: False
+  evaluate: False
+  eval_freq: -1
+  rerank: False
+  visactmap: False
